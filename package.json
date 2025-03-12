@@ -12,10 +12,11 @@
   "type": "commonjs",
   "dependencies": {
     "@google/generative-ai": "^0.24.0",
-    "axios": "^1.8.2",
+    "axios": "^1.8.3",
     "cheerio": "^1.0.0",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
-    "openai": "^4.86.2"
+    "openai": "^4.86.2",
+    "pinecone-client": "^2.0.0"
   }
 }

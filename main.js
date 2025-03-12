@@ -3,6 +3,8 @@ const axios = require("axios");
 const cheerio = require("cheerio");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 require("dotenv").config();
+const { storeWebpageContent } = require("./storeContent");
+const { retrieveRelevantChunks } = require("./retreiveChunks");
 
 const app = express();
 const port = process.env.PORT;
@@ -18,6 +20,28 @@ async function fetchWebpageContent(url) {
   } catch (error) {
     console.error("Error fetching webpage:", error);
     throw new Error("Failed to fetch webpage content.");
+  }
+}
+
+async function extractAnswerFromWebpage(url, html, query) {
+  const $ = cheerio.load(html);
+  const webpageText = $("body").text();
+
+  // Store scraped content into Pinecone
+  await storeWebpageContent(url, webpageText);
+
+  // Retrieve relevant chunks using the query
+  const relevantText = await retrieveRelevantChunks(query);
+
+  try {
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+    const prompt = `Answer the following question based on the text below:\n\nQuestion: ${query}\n\nText: ${relevantText}`;
+
+    const response = await model.generateContent(prompt);
+    return response.response.text().trim();
+  } catch (error) {
+    console.error("Error extracting answer:", error);
+    throw new Error("Failed to extract answer from content.");
   }
 }
 
@@ -46,7 +70,7 @@ app.post("/extract", async (req, res) => {
 
   try {
     const html = await fetchWebpageContent(url);
-    const answer = await extractAnswerFromWebpage(html, query);
+    const answer = await extractAnswerFromWebpage(url, html, query);
 
     res.json({
       url,
@@ -57,6 +81,7 @@ app.post("/extract", async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
 
 app.post("/extract-legal", async (req, res) => {
   const { agreementText } = req.body;
