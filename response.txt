@@ -1,0 +1,57 @@
+curl 
+
+assignment 2 
+curl --location 'http://localhost:3000/extract' \
+--header 'Content-Type: application/json' \
+--data '{
+  "url": "https://www.interviewbit.com/javascript-interview-questions/#classes",
+  "query": "What is Object Destructuring?"
+}
+'
+
+
+
+
+response -
+
+
+{
+    "url": "https://www.interviewbit.com/javascript-interview-questions/#classes",
+    "query": "What is Object Destructuring?",
+    "answer": "Object destructuring is a new way to extract elements from an object or an array in JavaScript."
+}
+
+
+
+assignment 1
+
+curl --location 'http://localhost:3000/extract-legal' \
+--header 'Content-Type: application/json' \
+--data '{
+  "agreementText": "John Doe agrees to provide consulting services to Acme Corporation for a period of 6 months. Payment of $5,000 will be made via Bank Transfer on 2025-04-15."
+}
+'
+
+
+
+response
+
+{
+    "agreementText": "John Doe agrees to provide consulting services to Acme Corporation for a period of 6 months. Payment of $5,000 will be made via Bank Transfer on 2025-04-15.",
+    "extractedData": {
+        "parties": [
+            "John Doe",
+            "Acme Corporation"
+        ],
+        "paymentAmount": "$5,000",
+        "paymentMethod": "Bank Transfer",
+        "paymentDate": "2025-04-15",
+        "description": "John Doe will provide consulting services to Acme Corporation. \nPayment will be made on 2025-04-15."
+    }
+}
+
+
+
+
+
+
